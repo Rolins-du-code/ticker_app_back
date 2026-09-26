@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Partie, Ticker
 
-# Register your models here.
+admin.site.register(Partie)
+admin.site.register(Ticker)
