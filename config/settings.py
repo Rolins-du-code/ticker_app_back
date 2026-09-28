@@ -58,7 +58,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 60.0
     },
     "notification-dernier-minute": {
-        "task": "games.taks.notifier_derniere_minute",
+        "task": "games.tasks.notifier_derniere_minute",
         "schedule": 60.0
     }
 }
@@ -138,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Douala'
 
 USE_I18N = True
 

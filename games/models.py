@@ -44,8 +44,8 @@ class Ticker(models.Model):
         ('rembourse', 'Remboursé'),  #le ticket remboursé et partie annulee
     ]
     numero = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tickers")
-    partie = models.ForeignKey(Partie, on_delete=models.CASCADE, related_name="tickers")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tickets")
+    partie = models.ForeignKey(Partie, on_delete=models.CASCADE, related_name="tickets")
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default = 'valide')
     date_achat = models.DateTimeField(auto_now_add=True)
 

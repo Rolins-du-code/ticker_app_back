@@ -2,7 +2,7 @@ import secrets
 from django.utils import timezone
 from django.db import transaction as db_transaction
 from celery import shared_task
-from .models import Partie, Ticket
+from .models import Partie, Ticker
 from payments.models import Transaction
 from payments.services import rembourser_mobile_money
 from support.models import Notification

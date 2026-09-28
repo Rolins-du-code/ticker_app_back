@@ -54,5 +54,4 @@ class TicketSerializer(serializers.ModelSerializer):
 class AchatTicketSerializer(serializers.Serializer):
     ''' Ne corres[pond a occcun model: sert uniquement a valider les
     donnees envoyer par l'app mobile pour l'achat d'un ticket'''''
-    partie_id = serializers.IntegerField()
     quantite = serializers.IntegerField(min_value=1)
