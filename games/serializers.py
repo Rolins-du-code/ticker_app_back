@@ -1,24 +1,30 @@
 import math
 
 from rest_framework import serializers
-from .models import Partie, Ticker
+from .models import Partie, Ticket
+# from .serializers import PartiePubliqueSerializer
 
-class PartiePublicSerializer(serializers.ModelSerializer):
-    ''' COnvertit un objet partie en JSON et vice versa POUR L'API REST ce que l'app mobile comprend et envoie
-    et il y a aussi une progression calculee, utile pour la barre de progression de l'app mobile'''
+
+class PartiePubliqueSerializer(serializers.ModelSerializer):
+    """
+    Serializer exposé à l'app mobile (utilisateurs).
+    Ne révèle jamais le montant_collecte exact en FCFA — seulement
+    une progression calculée, utile pour la barre de progression du front.
+    """
+
     tickets_vendus = serializers.SerializerMethodField()
     tickets_necessaires = serializers.SerializerMethodField()
     progression_pourcentage = serializers.SerializerMethodField()
+
     class Meta:
         model = Partie
         fields = [
-            'id',
+            "id",
             "titre",
             "description",
             "photo",
             "prix_produit",
             "prix_ticket",
-            "montant_collecte",
             "date_debut",
             "date_fin",
             "statut",
@@ -26,32 +32,33 @@ class PartiePublicSerializer(serializers.ModelSerializer):
             "tickets_necessaires",
             "progression_pourcentage",
         ]
+        # montant_collecte n'apparaît PAS dans cette liste → jamais envoyé
+        # à l'app mobile, seulement visible côté /admin/
+
     def get_tickets_vendus(self, obj):
-        return obj.tickers.exclude(statut='rembourse').count()
+        return obj.tickets.exclude(statut="rembourse").count()
 
     def get_tickets_necessaires(self, obj):
         return math.ceil(obj.prix_produit / obj.prix_ticket)
 
     def get_progression_pourcentage(self, obj):
-        tickets_vendus = self.get_tickets_vendus(obj)
-        tickets_necessaires = self.get_tickets_necessaires(obj)
-        if tickets_necessaires == 0:
+        vendus = self.get_tickets_vendus(obj)
+        necessaires = self.get_tickets_necessaires(obj)
+        if necessaires == 0:
             return 0
-        return min(round((tickets_vendus / tickets_necessaires) * 100), 100)
+        return min(round((vendus / necessaires) * 100), 100)
+
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Ticker
-        fields = [
-            "id",
-            "numero",
-            "partie",
-            "date_achat",
-            "statut",
-        ]
+        model = Ticket
+        fields = ["id", "numero", "partie", "date_achat", "statut"]
         read_only_fields = ["numero", "date_achat", "statut"]
 
+
 class AchatTicketSerializer(serializers.Serializer):
-    ''' Ne corres[pond a occcun model: sert uniquement a valider les
-    donnees envoyer par l'app mobile pour l'achat d'un ticket'''''
+    """
+    Ne correspond à aucun modèle : sert uniquement à valider
+    les données envoyées par l'app mobile pour un achat.
+    """
     quantite = serializers.IntegerField(min_value=1)

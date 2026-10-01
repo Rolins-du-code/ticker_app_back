@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-b0%p=!^e+cvhi&2g7c6xl9+-3a8%-csl5apa1l2qwou*hoy-j+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.1.148"]
 
 
 # Application definition
@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'payments',
     'support',
     'rest_framework_simplejwt',
-    'django_celery_beat'
-
+    'django_celery_beat',
 ]
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
@@ -53,14 +52,16 @@ CELERY_TIMEZONE = "Africa/Douala"
 
 
 CELERY_BEAT_SCHEDULE = {
-    "cloture-parties-expirees": {
+    # Vérifie toutes les minutes les parties arrivées à échéance
+    "cloturer-parties-expirees": {
         "task": "games.tasks.cloturer_parties_expirees",
-        "schedule": 60.0
+        "schedule": 60.0,  # en secondes
     },
-    "notification-dernier-minute": {
+    # Vérifie toutes les minutes s'il faut envoyer la notification finale
+    "notifier-derniere-minute": {
         "task": "games.tasks.notifier_derniere_minute",
-        "schedule": 60.0
-    }
+        "schedule": 60.0,
+    },
 }
 
 REST_FRAMEWORK = {

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Transaction
-from games.models import Ticker
+from games.models import Ticket
 
 
 class ConfirmationPaiementView(APIView):
@@ -53,7 +53,7 @@ class ConfirmationPaiementView(APIView):
 
             tickets_crees = []
             for _ in range(transaction.quantite_tickets):
-                ticket = Ticker.objects.create(user=transaction.user, partie=partie)
+                ticket = Ticket.objects.create(user=transaction.user, partie=partie)
                 tickets_crees.append(str(ticket.numero))
 
             partie.montant_collecte += transaction.montant

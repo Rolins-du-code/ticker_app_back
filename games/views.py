@@ -1,31 +1,19 @@
 from decimal import Decimal
-from django.utils import timezone
 from rest_framework import generics
 from rest_framework import permissions
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-from payments.services import initier_paiement_mobile_money
 from .models import Partie
-from .serializers import AchatTicketSerializer, PartiePublicSerializer
+from .serializers import AchatTicketSerializer
 from payments.models import Transaction
-from payments.views import ConfirmationPaiementView
-# Create your views here.
+from payments.services import initier_paiement_mobile_money
 
-class PartieListView(generics.ListAPIView):
-    '''GET /api/parties/ - liste toutes les partie en cours,
-    ListAPIView = vue en lecture seule toutes preyte, fournie par DRF.
-    '''
-    queryset = Partie.objects.filter(statut='en_cours').order_by('date_fin')
-    serializer_class = PartiePublicSerializer
-    permission_classes = [permissions.AllowAny]  
+# pour lister les partie 
+from .serializers import PartiePubliqueSerializer
+# from .serializers import PartieSerializer # Remplacez par le nom réel de votre sérialiseur si besoin
 
-class PartieDetailView(generics.RetrieveAPIView):
-    ''' GET /api/parties/<id>/ -> detail d'une partie precise'''
-    queryset = Partie.objects.all()
-    serializer_class = PartiePublicSerializer
-    permission_classes = [permissions.AllowAny]  # type: ignore #permet a n'importe qui d'acceder a cette vue, meme sans etre authentifie
 
 class AchatTicketView(APIView):
     """
@@ -34,7 +22,7 @@ class AchatTicketView(APIView):
     seulement une Transaction "en_attente". Les tickets ne sont créés
     qu'à la confirmation du paiement (voir payments/views.py).
     """
-    permission_classes = [permissions.IsAuthenticated] 
+    permission_classes = [permissions.IsAuthenticated]
     # IsAuthenticated : il faut être connecté pour acheter — on a besoin
     # de savoir QUI achète, impossible avec AllowAny.
 
@@ -64,9 +52,9 @@ class AchatTicketView(APIView):
 
         # On enregistre la transaction en "en_attente" — PAS encore de ticket
         transaction = Transaction.objects.create(
-            user=request.user,
-            partie=partie,
             quantite_tickets = quantite,
+            user=request.user,
+            partie = partie,
             montant=montant_total,
             type_transaction="achat",
             reference_mobile_money=resultat_paiement["reference"],
@@ -85,3 +73,22 @@ class AchatTicketView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+
+class PartieListView(generics.ListAPIView):
+    """
+    GET /api/games/parties/  → liste toutes les parties en cours.
+    """
+    queryset = Partie.objects.filter(statut="en_cours").order_by("date_fin")
+    serializer_class = PartiePubliqueSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class PartieDetailView(generics.RetrieveAPIView):
+    """
+    GET /api/games/parties/<id>/  → détail d'une partie précise.
+    """
+    queryset = Partie.objects.all()
+    serializer_class = PartiePubliqueSerializer
+    permission_classes = [permissions.AllowAny]

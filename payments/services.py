@@ -15,7 +15,8 @@ def initier_paiement_mobile_money(montant, numero_telephone):
 
 def rembourser_mobile_money(montant, numero_telephone):
     """
-        Strub temporaire: un rembourseme via orangeMoney
+    Stub temporaire : simule un remboursement via Mobile Money.
+    À remplacer plus tard par le vrai appel API opérateur.
     """
     reference = f"REFUND-{uuid.uuid4().hex[:10].upper()}"
-    return {"reference": reference, "statut": "reussi"}
+    return {"reference": reference, "statut": "reussie"}

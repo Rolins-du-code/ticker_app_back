@@ -2,7 +2,7 @@ import secrets
 from django.utils import timezone
 from django.db import transaction as db_transaction
 from celery import shared_task
-from .models import Partie, Ticker
+from .models import Partie, Ticket
 from payments.models import Transaction
 from payments.services import rembourser_mobile_money
 from support.models import Notification
@@ -116,6 +116,7 @@ def notifier_derniere_minute():
     for partie in parties_concernees:
         if partie.montant_collecte < partie.prix_produit:
             continue  # objectif pas encore atteint, pas de notif finale
+
         for ticket in partie.tickets.filter(statut="valide"):
             Notification.objects.create(
                 user=ticket.user,
